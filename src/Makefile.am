@@ -4,8 +4,9 @@ lib_LIBRARIES = libctr11.a
 libctr11_a_CFLAGS=$(AM_CFLAGS) $(C11FLAGS)
 libctr11_a_CCASFLAGS = -I$(top_srcdir)/data
 #payload_stage1_elf_CCASFLAGS = -I$(top_srcdir)/data
-libctr11_a_SOURCES = crt0.s ctr_pxi.c ctr_screen.c i2c.c ctr_system.c $(top_srcdir)/data/ctr_font_data.s ctr_freetype.c ctr_console.c ctr_hid.c ctr_circular_buffer.c ctr_headers.c ctr_firm.c
-
+libctr11_a_SOURCES = crt0.s ctr_pxi.c ctr_screen.c i2c.c ctr_system.c \
+$(top_srcdir)/data/ctr_font_data.s ctr_freetype.c ctr_console.c ctr_hid.c \
+ctr_circular_buffer.c ctr_headers.c ctr_firm.c ctr_init.c
 
 libctr11dir=$(pkgdatadir)
 libctr11_DATA=linker.ld
