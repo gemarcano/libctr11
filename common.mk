@@ -1,4 +1,4 @@
-INCPATHS=-I$(top_srcdir)/include/ -I$(prefix)/include/freetype2
+INCPATHS=-I$(top_srcdir)/include/ -I$(prefix)/include/freetype2 -I$(prefix)/include
 
 C9FLAGS=-mcpu=arm946e-s -march=armv5te -mlittle-endian -mword-relocations
 C11FLAGS=-mcpu=mpcore -mlittle-endian -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft

@@ -11,6 +11,8 @@
 #ifndef CTR_PXI_H_
 #define CTR_PXI_H_
 
+#include <ctr_core/ctr_core_pxi.h>
+
 #include <stdint.h>
 #include <stdbool.h>
 
