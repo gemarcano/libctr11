@@ -1,6 +1,7 @@
 #include <ctr11/ctr_console.h>
 #include <ctr11/ctr_screen.h>
 #include <ctr11/ctr_freetype.h>
+#include <ctr_core/ctr_core_pxi.h>
 
 #define PDN_GPU_CNT (*(volatile uint32_t*)0x10141200)
 #define LCD_REG(offset) (*((volatile uint32_t*)(0x10202000 + (offset))))
@@ -37,6 +38,7 @@ void __attribute__((weak)) ctr_libctr11_init(void);
 
 void __attribute__((weak)) ctr_libctr11_init(void)
 {
+	ctr_core_pxi_change_base((volatile uint32_t*)0x10163000);
 	ctr_screen_initialize(&ctr_screen_top, (void*)PDC0_FRAMEBUFFER_SETUP_FBA_ADDR_1, 400, 240, CTR_GFX_PIXEL_RGB8);
 	ctr_screen_initialize(&ctr_screen_bottom, (void*)PDC1_FRAMEBUFFER_SETUP_FBA_ADDR_1, 320, 240, CTR_GFX_PIXEL_RGB8);
 	ctr_console_initialize(&ctr_screen_top);
