@@ -1,4 +1,6 @@
 .arm
+.arch armv6k
+.fpu vfpv2
 .align 4
 .global _start
 
@@ -30,6 +32,16 @@ _start:
 	ldr r1, [r0]
 	add r0, r1, r0
 	blx r0
+
+	@ Initialize FPU access
+	mov r0, #0
+	mov r1, #0xF00000           @ Give full access to cp10/11 in user and privileged mode
+	mcr p15, 0, r1, c1, c0, 2   @ Write Coprocessor Access Control Register, needs an IMB
+	mcr p15, 0, r0, c7, c5, 4   @ Flush Prefetch Buffer, effectively an Instruction Memory Barrier (IMB)
+	mov r1, #0x40000000         @ Clear exception bits and enable VFP11
+	mov r2, #0x3C00000          @ Round towards zero (RZ) mode, flush-to-zero mode, default NaN mode
+	fmxr fpexc, r1              @ Write Floating-point exception register
+	fmxr fpscr, r2              @ Write Floating-Point Status and Control Register
 
 	@call libc initialization routines
 	adr r0, __libc_init_array_offset
