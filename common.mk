@@ -4,8 +4,8 @@ C9FLAGS=-mcpu=arm946e-s -march=armv5te -mlittle-endian -mword-relocations
 C11FLAGS=-mcpu=mpcore -mlittle-endian -march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
 THUMBFLAGS=#-mthumb #-mthumb-interwork
-#SIZE_OPTIMIZATION = -flto
-SIZE_OPTIMIZATION = -Wl,--gc-sections -ffunction-sections
+SIZE_OPTIMIZATION = -flto
+#SIZE_OPTIMIZATION = -Wl,--gc-sections -ffunction-sections
 AM_CPPFLAGS=$(INCPATHS)
 AM_CFLAGS= -std=gnu11 -O2 -g -fomit-frame-pointer -ffast-math \
 	-Wpedantic -Wall -Wextra -Wcast-align -Wcast-qual \

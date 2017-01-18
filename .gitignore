@@ -3,9 +3,13 @@ lib
 *.swp
 *.in
 *.o
+*.lo
+*.pc
+.libs
 .deps
 doc
 *.a
+*.la
 Makefile
 aclocal.m4
 autom4te.cache
