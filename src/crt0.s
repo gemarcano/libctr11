@@ -1,5 +1,5 @@
 .arm
-.arch armv6k
+.cpu mpcore
 .fpu vfpv2
 .align 4
 .global _start
@@ -11,6 +11,13 @@ _start:
 	mov r2, r0
 	mov r3, r1
 
+	@ Invalidate all caches before continuing
+	mov r0, #0
+	mcr p15, 0, r0, c7, c7, 0
+
+	@ Set FCSE to zero. r0 should be zero
+	mcr p15, 0, r0, c13, c0, 0
+
 	adr r0, argc_offset
 	ldr r1, [r0]
 	add r0, r1
@@ -21,13 +28,10 @@ _start:
 	add r0, r1
 	str r3, [r0]
 
-	@ Disable interrupts
-	CPSID aif
+	@ Disable interrupts, switch to system mode
+	CPSID aif, #0x1F
 
-	@ Set stack
-	ldr sp, =_stack
-
-	@ Clear bss
+	@ Clear bss, needs to happen before MMU setup since table is in this section
 	adr r0, clear_bss_offset
 	ldr r1, [r0]
 	add r0, r1, r0
@@ -42,6 +46,70 @@ _start:
 	mov r2, #0x3C00000          @ Round towards zero (RZ) mode, flush-to-zero mode, default NaN mode
 	fmxr fpexc, r1              @ Write Floating-point exception register
 	fmxr fpscr, r2              @ Write Floating-Point Status and Control Register
+
+	@ Set stack
+	ldr sp, =_stack
+
+	@initialize MMU table
+	adr r0, ctr_mmu_initialize_offset
+	ldr r1, [r0]
+	add r0, r1
+	blx r0
+
+	mrc p15, 0, r0, c2, c0, 0
+	ldr r0, =ctr_mmu_level1_table
+	lsr r0, #13
+	lsl r0, #13
+	orr r0, #1 << 3
+	orr r0, #1 << 1
+	mcr p15, 0, r0, c2, c0, 0
+
+	@Invalidate all TLB entries
+	mcr p15, 0, r0, c8, c7, 0
+
+	@(FIXME For now) set all domains to manager access level
+	mvn r0, #0
+	mcr p15, 0, r0, c3, c0, 0
+
+	@TTBCR, set N to zero so TTBR0 is used always
+	mov r0, #0
+	mcr p15, 0, r0, c2, c0, 2
+
+	@ Disable instruction and data cache
+	mrc p15, 0, r0, c1, c0, 0
+	bic r0, #1 << 12
+	bic r0, #1 << 2 @data cache
+	mcr p15, 0, r0, c1, c0, 0
+
+	@ FIXME Should we flush the caches now?
+
+	@Auxiliary Control register
+	mrc p15, 0, r0, c1, c0, 1
+	bic r0, #1 << 6 @Don't do L1 parity checking
+	orr r0, #1 << 5 @Set CPU mode to SMP
+	@ Don't know enough to decide on bit 4 EXCL, about cache inclu/exclusivity
+	orr r0, #1 << 3 @Enable instruction folding
+	orr r0, #1 << 2 @Enable static branch prediction
+	orr r0, #1 << 1 @Enable dynamic branch prediction
+	orr r0, #1 @Enable return stack
+	mcr p15, 0, r0, c1, c0, 1
+
+	@ Configure control register
+	mrc p15, 0, r0, c1, c0, 0
+	bic r0, #1 << 29 @Disable forced Access Perm checking
+	bic r0, #1 << 28 @Disable TEX remapping
+	bic r0, #1 << 27 @Don't make FIQs NMFIs
+	@I can't be bothered by bit 25 EE, CPSR E bit on exception
+	orr r0, #1 << 23
+	orr r0, #1 << 22 @Enable unaligned support
+	bic r0, #1 << 15 @Loads to PC set T bit
+	orr r0, #1 << 13 @Use high exception vectors
+	orr r0, #1 << 12 @Enable level 1 instruction cache
+	orr r0, #1 << 11 @Enable program flow prediction
+	orr r0, #1 << 2 @Enable data cache
+	bic r0, #1 << 1 @disable strict align fault checking
+	orr r0, #1 @Enable MPU
+	mcr p15, 0, r0, c1, c0, 0
 
 	@call libc initialization routines
 	adr r0, __libc_init_array_offset
@@ -133,6 +201,9 @@ argc:
 
 argv:
 .skip 4
+
+ctr_mmu_initialize_offset:
+.word ctr_mmu_initialize-.
 
 clear_bss:
 	@clear bss

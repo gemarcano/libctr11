@@ -24,11 +24,13 @@ extern "C" {
 
 /**	@brief Initializes the console subsystem.
  *
+ *	@param[in] surface Surface to use to draw upon.
+ *
  *	@returns 0 on success, anything else on an error. This function should
  *		suceed. If it does not, this means that the underling libc and graphics
  *		handling for libctr9 is broken.
  */
-int ctr_console_initialize(const ctr_screen *screen);
+int ctr_console_initialize(void *surface);
 
 typedef ctr_core_console ctr_console;
 

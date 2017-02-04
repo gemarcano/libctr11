@@ -14,9 +14,9 @@
 
 #include <ctr11/ctr_freetype.h>
 
-int ctr_console_initialize(const ctr_screen *screen)
+int ctr_console_initialize(void *surface)
 {
-	return ctr_core_console_initialize(screen);
+	return ctr_core_console_initialize(surface);
 }
 
 short ctr_console_get_char_width(char c)

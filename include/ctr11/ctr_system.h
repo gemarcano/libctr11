@@ -17,6 +17,9 @@
 
 #ifdef __cplusplus
 extern "C" {
+#define CTR_NORETURN [[noreturn]]
+#else
+#define CTR_NORETURN _Noreturn
 #endif
 
 /** @brief Enumeration describing the running system.
@@ -29,20 +32,6 @@ typedef ctr_core_system_type ctr_system_type;
  */
 bool ctr_detect_a9lh_entry(void);
 
-/**	@brief Sets up the TWL keyslot.
- *
- *	This only really matters if arm9 execution is obtained via a9lh, or prior to
- *	a FIRM load. Nothing happens if FIRM had been launched previously.
- *
- *	@pre The areas of ITCM with TWL information are intact.
- *	@post TWL keys are setup. Note that this also does use the SHA subsystem, so
- *		the SHA register is modified. This means that under a9lh this overwrites
- *		the OTP hash, so back it up before calling this function.
- *
- *	@post The TWL keyslot is setup properly.
- */
-void ctr_twl_keyslot_setup(void);
-
 /**	@brief Powers off the 3DS.
  *
  *	This function does not return. It powers off the 3DS via an i2c call to the
@@ -50,7 +39,7 @@ void ctr_twl_keyslot_setup(void);
  *
  *	@post 3DS has powered off.
  */
-void ctr_system_poweroff(void);
+CTR_NORETURN void ctr_system_poweroff(void);
 
 /**	@brief Resets the 3DS.
  *
@@ -58,7 +47,7 @@ void ctr_system_poweroff(void);
  *
  *	@post 3DS has restarted.
  */
-void ctr_system_reset(void);
+CTR_NORETURN void ctr_system_reset(void);
 
 /**	@brief Returns the enumeration corresponding to the running system.
  *
