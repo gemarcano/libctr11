@@ -1,4 +1,5 @@
 #include <ctr11/ctr_mmu.h>
+#include <ctr11/ctr_cache.h>
 #include <stdint.h>
 #include <stdalign.h>
 #include <string.h>
@@ -48,6 +49,7 @@ void ctr_mmu_supersection_initialize(uint32_t *entry, uint32_t base, ctr_mmu_per
 	*entry = (base & 0xFF000000) | 1u << 18 | 1 << 16 | apx | tex | ap | cb | 0x2;
 }
 
+void ctr_mmu_initialize_(void);
 void ctr_mmu_initialize(void)
 {
 	for (size_t i = 0; i < 0x1000; ++i)
@@ -63,5 +65,7 @@ void ctr_mmu_initialize(void)
 			ctr_mmu_section_initialize(ctr_mmu_level1_table + i, i << 20, CTR_MMU_RW_RW, attr, 0);
 		}
 	}
+	ctr_cache_clean_data_all();
+	ctr_mmu_initialize_();
 }
 

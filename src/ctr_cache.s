@@ -10,13 +10,21 @@
 
 .align 4
 
-.global ctr_cache_clean_and_flush_all, ctr_cache_flush_data_all
-.global ctr_cache_flush_data_entry, ctr_cache_data_clean_entry
+.global ctr_cache_enable_data, ctr_cache_disable_data
+.global ctr_cache_enable_instruction, ctr_cache_disable_instruction
+.global ctr_cache_clean_and_flush_all, ctr_cache_clean_data_all
+.global ctr_cache_flush_data_all, ctr_cache_flush_data_entry
+.global ctr_cache_data_clean_entry
 .global ctr_cache_data_clean_and_flush_entry
 .global ctr_cache_flush_instruction_all, ctr_cache_flush_instruction_entry
 .global ctr_isb, ctr_dsb, ctr_dmb
 
+.type ctr_cache_enable_data, %function
+.type ctr_cache_disable_data, %function
+.type ctr_cache_enable_instruction, %function
+.type ctr_cache_disable_instruction, %function
 .type ctr_cache_clean_and_flush_all, %function
+.type ctr_cache_clean_data_all, %function
 .type ctr_cache_flush_data_all, %function
 .type ctr_cache_flush_data_entry, %function
 .type ctr_cache_data_clean_entry, %function
@@ -32,7 +40,36 @@
 	bx lr
 .endm
 
+ctr_cache_enable_data:
+	mrc p15, 0, r0, c1, c0, 0
+	orr r0, #1 << 2
+	mcr p15, 0, r0, c1, c0, 0
+	bx lr
+
+ctr_cache_disable_data:
+	mrc p15, 0, r0, c1, c0, 0
+	bic r0, #1 << 2
+	mcr p15, 0, r0, c1, c0, 0
+	bx lr
+
+ctr_cache_enable_instruction:
+	mrc p15, 0, r0, c1, c0, 0
+	orr r0, #1 << 12
+	mcr p15, 0, r0, c1, c0, 0
+	bx lr
+
+ctr_cache_disable_instruction:
+	mrc p15, 0, r0, c1, c0, 0
+	bic r0, #1 << 12
+	mcr p15, 0, r0, c1, c0, 0
+	bx lr
+
 ctr_cache_clean_and_flush_all:
+	mov r0, #0
+	mcr p15, 0, r0, c7, c10, 0 @clean data
+	define_entry_function c7, 0 @invalidate both, flush branch target cache
+
+ctr_cache_clean_data_all:
 	mov r0, #0
 	define_entry_function c10, 0
 

@@ -63,6 +63,7 @@ void ctr_mmu_coarse_initialize(uint32_t *entry, uint32_t base, unsigned char dom
 void ctr_mmu_section_initialize(uint32_t *entry, uint32_t base, ctr_mmu_permissions perms, ctr_mmu_memory_attributes attr, unsigned char domain);
 void ctr_mmu_supersection_initialize(uint32_t *entry, uint32_t base, ctr_mmu_permissions perms, ctr_mmu_memory_attributes attr);
 void ctr_mmu_initialize(void);
+void ctr_mmu_shutdown(void);
 
 #ifdef __cplusplus
 extern "C" }

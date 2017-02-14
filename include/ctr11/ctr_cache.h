@@ -15,6 +15,32 @@
 extern "C" {
 #endif
 
+/**	@brief Enables the data cache (if the MMU is on).
+ *
+ *	@post Enables the data cache for pages marked as cacheable, if the MMU is
+ *		on.
+ */
+void ctr_cache_enable_data(void);
+
+/**	@brief Disables the data cache.
+ *
+ *	@post Disables the data cache.
+ */
+void ctr_cache_disable_data(void);
+
+/**	@brief Enables the instruction cache.
+ *
+ *	@post Enables the instruction cache. If the MMU is off, all instruction
+ *	accesses are treated as cacheable, else it depends on the page attributes.
+ */
+void ctr_cache_enable_instruction(void);
+
+/**	@brief Disables the instruction cache.
+ *
+ *	@post Disables the instruction cache.
+ */
+void ctr_cache_disable_instruction(void);
+
 /**	@brief Cleans and flushes all caches and write buffers.
  *
  *	@post All of the caches have been invalidated, and the data cache has been
@@ -27,6 +53,12 @@ void ctr_cache_clean_and_flush_all(void);
  *	@post The entire data cache is invalidated.
  */
 void ctr_cache_flush_data_all(void);
+
+/**	@brief Cleans all of the data cache.
+ *
+ *	@post The entire data cache is cleaned.
+ */
+void ctr_cache_clean_data_all(void);
 
 /**	@brief Flushes (invalidates) the entry in the cache associated with the
  *		given address, if any exists.

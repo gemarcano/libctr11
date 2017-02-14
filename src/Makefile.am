@@ -8,7 +8,7 @@ libctr11_la_CCASFLAGS = -I$(top_srcdir)/data
 libctr11_la_SOURCES = crt0.s ctr_pxi.c ctr_screen.cpp i2c.c ctr_system.c \
 	$(top_srcdir)/data/ctr_font_data.s ctr_freetype.c ctr_console.c ctr_hid.c \
 	ctr_circular_buffer.c ctr_headers.c ctr_firm.c ctr_init.c ctr_surface.cpp \
-	ctr_window.cpp ctr_mmu.c ctr_cache.s
+	ctr_window.cpp ctr_mmu.c ctr_cache.s ctr_mmu_.s
 libctr11_la_LDFLAGS=$(AM_LDFLAGS) -static
 
 libctr11dir=$(pkgdatadir)

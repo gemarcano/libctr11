@@ -6,7 +6,10 @@
 
 .section .text.start, "x"
 
+.type clear_bss, %function
+
 _start:
+	@FIXME what if the MMU is enabled?
 	@ Preserve argc and argv
 	mov r2, r0
 	mov r3, r1
@@ -14,6 +17,9 @@ _start:
 	@ Invalidate all caches before continuing
 	mov r0, #0
 	mcr p15, 0, r0, c7, c7, 0
+
+	@ dsb
+	mcr p15, 0, r0, c7, c10, 4
 
 	@ Set FCSE to zero. r0 should be zero
 	mcr p15, 0, r0, c13, c0, 0
@@ -50,43 +56,12 @@ _start:
 	@ Set stack
 	ldr sp, =_stack
 
-	@initialize MMU table
-	adr r0, ctr_mmu_initialize_offset
-	ldr r1, [r0]
-	add r0, r1
-	blx r0
-
-	mrc p15, 0, r0, c2, c0, 0
-	ldr r0, =ctr_mmu_level1_table
-	lsr r0, #14
-	lsl r0, #14
-	orr r0, #1 << 3
-	orr r0, #1 << 1
-	mcr p15, 0, r0, c2, c0, 0
-
-	@Invalidate all TLB entries
-	mcr p15, 0, r0, c8, c7, 0
-
-	@(FIXME For now) set all domains to manager access level
-	mvn r0, #0
-	mcr p15, 0, r0, c3, c0, 0
-
-	@TTBCR, set N to zero so TTBR0 is used always
-	mov r0, #0
-	mcr p15, 0, r0, c2, c0, 2
-
-	@ Disable instruction and data cache
-	mrc p15, 0, r0, c1, c0, 0
-	bic r0, #1 << 12
-	bic r0, #1 << 2 @data cache
-	mcr p15, 0, r0, c1, c0, 0
-
 	@ FIXME Should we flush the caches now?
 
 	@Auxiliary Control register
 	mrc p15, 0, r0, c1, c0, 1
 	bic r0, #1 << 6 @Don't do L1 parity checking
-	@orr r0, #1 << 5 @Set CPU mode to SMP
+	orr r0, #1 << 5 @Set CPU mode to SMP
 	@ Don't know enough to decide on bit 4 EXCL, about cache inclu/exclusivity
 	orr r0, #1 << 3 @Enable instruction folding
 	orr r0, #1 << 2 @Enable static branch prediction
@@ -108,8 +83,13 @@ _start:
 	orr r0, #1 << 11 @Enable program flow prediction
 	orr r0, #1 << 2 @Enable data cache
 	bic r0, #1 << 1 @disable strict align fault checking
-	orr r0, #1 @Enable MMU -- default mapping is ALWAYS flat
 	mcr p15, 0, r0, c1, c0, 0
+
+	@ Initialize MMU table
+	adr r0, ctr_mmu_initialize_offset
+	ldr r1, [r0]
+	add r0, r1
+	blx r0
 
 	@call libc initialization routines
 	adr r0, __libc_init_array_offset
@@ -221,5 +201,5 @@ clear_bss:
 		str r2, [r0], #4
 		b .Lclear_bss_loop
 	.Lclear_bss_loop_done:
-	blx lr
+	bx lr
 
