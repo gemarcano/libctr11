@@ -106,7 +106,7 @@ void ctr_dsb(void);
  *	@post Ensured all memory accesses before this call took place before
  *		continuing.
  */
-void ctr_isb(void);
+void ctr_dmb(void);
 
 #ifdef __cplusplus
 }

@@ -58,8 +58,8 @@ _start:
 
 	mrc p15, 0, r0, c2, c0, 0
 	ldr r0, =ctr_mmu_level1_table
-	lsr r0, #13
-	lsl r0, #13
+	lsr r0, #14
+	lsl r0, #14
 	orr r0, #1 << 3
 	orr r0, #1 << 1
 	mcr p15, 0, r0, c2, c0, 0
@@ -86,7 +86,7 @@ _start:
 	@Auxiliary Control register
 	mrc p15, 0, r0, c1, c0, 1
 	bic r0, #1 << 6 @Don't do L1 parity checking
-	orr r0, #1 << 5 @Set CPU mode to SMP
+	@orr r0, #1 << 5 @Set CPU mode to SMP
 	@ Don't know enough to decide on bit 4 EXCL, about cache inclu/exclusivity
 	orr r0, #1 << 3 @Enable instruction folding
 	orr r0, #1 << 2 @Enable static branch prediction
@@ -108,7 +108,7 @@ _start:
 	orr r0, #1 << 11 @Enable program flow prediction
 	orr r0, #1 << 2 @Enable data cache
 	bic r0, #1 << 1 @disable strict align fault checking
-	orr r0, #1 @Enable MPU
+	orr r0, #1 @Enable MMU -- default mapping is ALWAYS flat
 	mcr p15, 0, r0, c1, c0, 0
 
 	@call libc initialization routines

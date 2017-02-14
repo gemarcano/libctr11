@@ -1,4 +1,5 @@
 #include <ctr11/ctr_console.h>
+#include <ctr11/ctr_cache.h>
 
 #include <sys/iosupport.h>
 #include <sys/types.h>
@@ -16,7 +17,7 @@
 
 int ctr_console_initialize(void *surface)
 {
-	return ctr_core_console_initialize(surface);
+	return ctr_core_console_initialize(surface, ctr_dsb);
 }
 
 short ctr_console_get_char_width(char c)
