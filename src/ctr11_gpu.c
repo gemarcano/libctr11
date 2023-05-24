@@ -1,3 +1,5 @@
+#include <ctr11/ctr_gpu.h>
+
 #include <inttypes.h>
 
 #define BRIGHTNESS 0x39
@@ -5,18 +7,18 @@
 #define FB_TOP_RIGHT 0x18300000
 #define FB_BOTTOM 0x18346500
 
-static inline void regSet();
-
-void __attribute__ ((naked)) a11Entry()
+static inline void regSet(void);
+/*
+void a11Entry()
 {
-	__asm__ (
+	__asm__ volatile  (
 		"CPSID aif\n\t" //Disable interrupts
 		"ldr r0,=_stack\n\t"
 		"mov sp, r0"
 	);
 
 	regSet();
-}
+}*/
 
 #define PDN_GPU_CNT (*(volatile uint32_t*)0x10141200)
 #define LCD_REG(offset) (*((volatile uint32_t*)(0x10202000 + (offset))))
@@ -24,7 +26,7 @@ void __attribute__ ((naked)) a11Entry()
 #define LCD_BOT_CONF_REG(offset) (*((volatile uint32_t*)(0x10202A00 + (offset))))
 
 #define LCD_TOP_CONF_BRIGHTNESS LCD_TOP_CONF_REG(0x40)
-#define LCD_TOP_CONF_BRIGHTNESS LCD_BOT_CONF_REG(0x40)
+#define LCD_BOT_CONF_BRIGHTNESS LCD_BOT_CONF_REG(0x40)
 
 #define PDC0_FRAMEBUFFER_SETUP_REG(offset) (*((volatile uint32_t*)(0x10400400 + (offset))))
 #define PDC1_FRAMEBUFFER_SETUP_REG(offset) (*((volatile uint32_t*)(0x10400500 + (offset))))
@@ -39,7 +41,18 @@ void __attribute__ ((naked)) a11Entry()
 #define PDC0_FRAMEBUFFER_SETUP_FBB_ADDR_1 PDC0_FRAMEBUFFER_SETUP_REG(0x94)
 #define PDC0_FRAMEBUFFER_SETUP_FBB_ADDR_2 PDC0_FRAMEBUFFER_SETUP_REG(0x98)
 
-static inline void regSet()
+#define PDC1_FRAMEBUFFER_SETUP_DIMS PDC1_FRAMEBUFFER_SETUP_REG(0x5C)
+#define PDC1_FRAMEBUFFER_SETUP_FBA_ADDR_1 PDC1_FRAMEBUFFER_SETUP_REG(0x68)
+#define PDC1_FRAMEBUFFER_SETUP_FBA_ADDR_2 PDC1_FRAMEBUFFER_SETUP_REG(0x6C)
+#define PDC1_FRAMEBUFFER_SETUP_FB_FORMAT PDC1_FRAMEBUFFER_SETUP_REG(0x70)
+#define PDC1_FRAMEBUFFER_SETUP_FB_SELECT PDC1_FRAMEBUFFER_SETUP_REG(0x78)
+#define PDC1_FRAMEBUFFER_SETUP_DISCO PDC1_FRAMEBUFFER_SETUP_REG(0x84)
+#define PDC1_FRAMEBUFFER_SETUP_FB_STRIDE PDC1_FRAMEBUFFER_SETUP_REG(0x90)
+#define PDC1_FRAMEBUFFER_SETUP_FBB_ADDR_1 PDC1_FRAMEBUFFER_SETUP_REG(0x94)
+#define PDC1_FRAMEBUFFER_SETUP_FBB_ADDR_2 PDC1_FRAMEBUFFER_SETUP_REG(0x98)
+
+
+static inline void regSet(void)
 {
 	volatile uint32_t *entry = (uint32_t *)0x1FFFFFF8;
 
@@ -106,7 +119,7 @@ static inline void regSet()
 	PDC1_FRAMEBUFFER_SETUP_REG(0x40) = 0x01980194;
 	PDC1_FRAMEBUFFER_SETUP_REG(0x44) = 0x00000000;
 	PDC1_FRAMEBUFFER_SETUP_REG(0x48) = 0x00000011;
-	PDC1_FRAMEBUFFER_SETUP_FB_DIMS = (240u << 16) | 320u;
+	PDC1_FRAMEBUFFER_SETUP_DIMS = (240u << 16) | 320u;
 	PDC1_FRAMEBUFFER_SETUP_REG(0x60) = 0x01c100d1;
 	PDC1_FRAMEBUFFER_SETUP_REG(0x64) = 0x01920052;
 	PDC1_FRAMEBUFFER_SETUP_FBA_ADDR_1 = 0x18300000 + 0x46500;
@@ -134,6 +147,10 @@ static inline void regSet()
 	while(!*entry);
 
 	// Jump
-	((void (*)())*entry)();
+	((void (*)(void))*entry)();
 }
 
+void ctr_gpu_init_screens(void)
+{
+	regSet();
+}

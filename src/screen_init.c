@@ -5,8 +5,8 @@
 #define FB_TOP_RIGHT 0x18300000
 #define FB_BOTTOM 0x18346500
 
-static inline void regSet();
-
+static inline void regSet(void);
+/*
 void __attribute__ ((naked)) a11Entry()
 {
 	__asm__ (
@@ -16,7 +16,7 @@ void __attribute__ ((naked)) a11Entry()
 	);
 
 	regSet();
-}
+}*/
 
 #define PDN_GPU_CNT (*(volatile uint32_t*)0x10141200)
 #define LCD_REG(offset) (*((volatile uint32_t*)(0x10202000 + (offset))))
@@ -50,7 +50,7 @@ void __attribute__ ((naked)) a11Entry()
 #define PDC1_FRAMEBUFFER_SETUP_FBB_ADDR_2 PDC1_FRAMEBUFFER_SETUP_REG(0x98)
 
 
-static inline void regSet()
+static inline void regSet(void)
 {
 	volatile uint32_t *entry = (uint32_t *)0x1FFFFFF8;
 
@@ -145,6 +145,6 @@ static inline void regSet()
 	while(!*entry);
 
 	// Jump
-	((void (*)())*entry)();
+	((void (*)(void))*entry)();
 }
 
