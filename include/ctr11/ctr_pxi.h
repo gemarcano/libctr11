@@ -1,10 +1,5 @@
-/*******************************************************************************
- * Copyright (C) 2016 Gabriel Marcano
- *
- * Refer to the COPYING.txt file at the top of the project directory. If that is
- * missing, this file is licensed under the GPL version 2.0 or later.
- *
- ******************************************************************************/
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Copyright: Gabriel Marcano, 2023
 
 /** @file */
 
@@ -25,6 +20,13 @@ extern "C" {
 #define PXI_CNT11 PXI_CNT(*(volatile uint32_t*)0x10163000)
 #define PXI_SEND11 PXI_SEND(*(volatile uint32_t*)0x10163000)
 #define PXI_RECV11 PXI_RECV(*(volatile uint32_t*)0x10163000)
+
+/** @brief Initializes the ARM11 PXI functions.
+ *
+ * This should be called before invoking any ctr_pxi_* function. Internally, it
+ * ensures the functions use the ARM11 PXI addresses.
+ */
+void ctr_pxi_initialize(void);
 
 /**	@brief Changes the base where the PXI registers are accessed from.
  *

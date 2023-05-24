@@ -3,6 +3,11 @@
 
 #include <ctr11/ctr_pxi.h>
 
+void ctr_pxi_initialize(void)
+{
+	ctr_pxi_change_base((volatile uint32_t*)0x10163000);
+}
+
 void ctr_pxi_change_base(volatile uint32_t *base)
 {
 	ctr_core_pxi_change_base(base);
@@ -23,7 +28,7 @@ bool ctr_pxi_send_full_status(void)
 	return ctr_core_pxi_send_full_status();
 }
 
-bool ctr_pxi_get_send_empty_irq()
+bool ctr_pxi_get_send_empty_irq(void)
 {
 	return ctr_core_pxi_get_send_empty_irq();
 }
