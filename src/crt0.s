@@ -1,11 +1,15 @@
+@ SPDX-License-Identifier: GPL-2.0-or-later
+@ Copyright: Gabriel Marcano, 2023
+
 .arm
-.arch armv6k
+.cpu mpcore
 .fpu vfpv2
 .align 4
-.global _start
 
 .section .text.start, "x"
 
+.global _start
+.type _start, STT_FUNC
 _start:
 	@ Preserve argc and argv
 	mov r2, r0
@@ -90,7 +94,9 @@ _start:
 	add r1, r2, r1
 	blx r1
 
-	b . @die if we return, just forcibly hang
+end_hang_:
+	wfi
+	b end_hang_ @die if we return, just forcibly hang
 
 main_offset:
 .word main-.
@@ -150,5 +156,4 @@ clear_bss:
 		str r2, [r0], #4
 		b .Lclear_bss_loop
 	.Lclear_bss_loop_done:
-	blx lr
-
+	bx lr
