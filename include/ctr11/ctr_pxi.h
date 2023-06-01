@@ -15,12 +15,6 @@
 extern "C" {
 #endif
 
-//PXI registers
-#define PXI_SYNC11 PXI_SYNC(*(volatile uint32_t*)0x10163000)
-#define PXI_CNT11 PXI_CNT(*(volatile uint32_t*)0x10163000)
-#define PXI_SEND11 PXI_SEND(*(volatile uint32_t*)0x10163000)
-#define PXI_RECV11 PXI_RECV(*(volatile uint32_t*)0x10163000)
-
 /** @brief Initializes the ARM11 PXI functions.
  *
  * This should be called before invoking any ctr_pxi_* function. Internally, it
@@ -162,4 +156,3 @@ bool ctr_pxi_pop(uint32_t *data);
 #endif
 
 #endif//CTR_PXI_H_
-
