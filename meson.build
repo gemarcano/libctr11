@@ -25,7 +25,6 @@ sources = files([
   'src/ctr_screen.c',
   'src/ctr_system.c',
   'src/i2c.c',
-  'src/screen_init.c',
   'src/crt0.s',
 ])
 
