@@ -25,6 +25,7 @@ sources = files([
   'src/ctr_screen.c',
   'src/ctr_system.c',
   'src/i2c.c',
+  'src/ctr_lcd.c',
   'src/crt0.s',
 ])
 
@@ -39,6 +40,7 @@ header_files = files([
 'include/ctr11/ctr_screen.h',
 'include/ctr11/ctr_system.h',
 'include/ctr11/i2c.h',
+'include/ctr11/ctr_lcd.h',
 ])
 
 # FIXME do not install fatfs headers
